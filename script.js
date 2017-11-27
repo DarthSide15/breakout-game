@@ -2,24 +2,63 @@ var canvas = document.getElementById("myCanvas");       // Targets the canvas el
 var ctx = canvas.getContext("2d");
 var x = canvas.width / 2;                               // Starting position
 var y = canvas.height - 30;
-var dx = -1;                                             // Controls speed and direction
-var dy = 0;
+var dx = -1;                                            // Controls speed and direction
+var dy = 1;
+var ballRadius = 10;
+var paddleHeight = 10;
+var paddleWidth = 75;
+var paddleX = (canvas.width - paddleWidth) / 2;
+var leftPress = false;
+var rightPress = true;
+
+function getRandomColor() {
+
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
 
 function drawBall() {
 
-    ctx.beginPath();                    // Start drawing
-    ctx.arc(x, y, 10, 0, Math.PI*2);    // Our ball's parameters
-    ctx.fillStyle = "#0095DD";          // What color will be used to fill
-    ctx.fill();                         // Fill with the color chosen above
-    ctx.closePath();                    // Stop drawing
+    ctx.beginPath();                                    // Start drawing
+    ctx.arc(x, y, ballRadius, 0, Math.PI*2);            // Our ball's parameters
+    ctx.fillStyle = "0095DD";                           // What color will be used to fill
+    ctx.fill();                                         // Fill with the color chosen above
+    ctx.closePath();                                    // Stop drawing
+}
+
+function drawPaddle() {
+
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "0095DD";
+    ctx.fill();
+    ctx.closePath();
 }
 
 function draw() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);   // Clears canvas after each frame
     drawBall();                                         // Draws ball
+
+    // Bounces off top and bottom wall
+    if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
+        dy = -dy;
+        ctx.fillStyle = getRandomColor();
+    }
+
+    // Bounces off left and right wall
+    if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
+        dx = -dx;
+        ctx.fillStyle = getRandomColor();
+    }
+
     x += dx;                                            // Changes x position
     y += dy;                                            // Changes y position
 }
 
 setInterval(draw, 10);                                  // Repeats every 10ms, until we stop it
+
