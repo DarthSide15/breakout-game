@@ -1,15 +1,19 @@
 var canvas = document.getElementById("myCanvas");       // Targets the canvas element from HTML file
 var ctx = canvas.getContext("2d");
 var x = canvas.width / 2;                               // Starting position
-var y = canvas.height - 30;
+var y = canvas.height - 200;
 var dx = -1;                                            // Controls speed and direction
 var dy = 1;
 var ballRadius = 10;
-var paddleHeight = 10;
-var paddleWidth = 75;
+var paddleHeight = 12;
+var paddleWidth = 80;
 var paddleX = (canvas.width - paddleWidth) / 2;
 var leftPress = false;
-var rightPress = true;
+var rightPress = false;
+
+
+
+
 
 function getRandomColor() {
 
@@ -21,6 +25,8 @@ function getRandomColor() {
     return color;
 }
 
+
+
 function drawBall() {
 
     ctx.beginPath();                                    // Start drawing
@@ -29,6 +35,7 @@ function drawBall() {
     ctx.fill();                                         // Fill with the color chosen above
     ctx.closePath();                                    // Stop drawing
 }
+
 
 function drawPaddle() {
 
@@ -39,26 +46,76 @@ function drawPaddle() {
     ctx.closePath();
 }
 
+
+
+
+
 function draw() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);   // Clears canvas after each frame
     drawBall();                                         // Draws ball
+    drawPaddle();                                       // Draws paddle
 
     // Bounces off top and bottom wall
-    if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
+    if (y + dy < ballRadius) {
         dy = -dy;
-        ctx.fillStyle = getRandomColor();
+    } else if (y + dy > canvas.height - ballRadius - paddleHeight) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+        }
+        else {
+            alert("GAME OVER");
+            document.location.reload();
+        }
     }
+
 
     // Bounces off left and right wall
     if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
         dx = -dx;
-        ctx.fillStyle = getRandomColor();
     }
 
     x += dx;                                            // Changes x position
     y += dy;                                            // Changes y position
+
+    if(rightPress && paddleX < canvas.width - paddleWidth) {
+        paddleX += 5;
+    }
+    else if (leftPress && paddleX > 0) {
+        paddleX -= 5;
+    }
 }
+
+
+
+
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+
+    if (e.keyCode == 39) {
+        rightPress = true;
+    }
+    else if (e.keyCode == 37) {
+        leftPress = true;
+    }
+}
+
+function keyUpHandler(e) {
+
+    if (e.keyCode == 39) {
+        rightPress = false;
+    }
+    else if (e.keyCode == 37) {
+        leftPress = false;
+    }
+
+}
+
+
+
 
 setInterval(draw, 10);                                  // Repeats every 10ms, until we stop it
 
